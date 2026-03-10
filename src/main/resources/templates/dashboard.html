@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Inventario</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+<div class="container">
+    <aside class="sidebar">
+        <h2 class="logo">Inventario</h2>
+        <nav>
+            <ul>
+                <li><a th:href="@{/dashboard}">Dashboard</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <h1>Dashboard</h1>
+            <div class="user-box">
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="btn btn-primary logout-btn">
+                        Cerrar sesión
+                    </button>
+                </form>
+            </div>
+        </header>
+
+        <section class="cards">
+            <div class="card">
+                <h3>Total Productos</h3>
+                <p th:text="${totalProducts}">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Registros Stock</h3>
+                <p th:text="${totalStock}">0</p>
+            </div>
+
+            <div class="card warning">
+                <h3>Stock Bajo</h3>
+                <p th:text="${lowStockAlerts.size()}">0</p>
+            </div>
+
+            <div class="card danger">
+                <h3>Caducados</h3>
+                <p th:text="${expiringAlerts.size()}">0</p>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Alertas de stock bajo</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Ubicación</th>
+                    <th>Stock</th>
+                    <th>Mínimo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="stock : ${lowStockAlerts}">
+                    <td th:text="${stock.product.name}">Producto</td>
+                    <td th:text="${stock.location.name}">Ubicación</td>
+                    <td th:text="${stock.quantity}">0</td>
+                    <td th:text="${stock.product.minStock}">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>Productos caducados o por caducar</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Ubicación</th>
+                    <th>Caducidad</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="stock : ${expiringAlerts}">
+                    <td th:text="${stock.product.name}">Producto</td>
+                    <td th:text="${stock.location.name}">Ubicación</td>
+                    <td th:text="${stock.expirationDate}">2026-03-10</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>Movimientos recientes</h2>
+            <div class="movements">
+                <div class="movement-item" th:each="movement : ${movements}">
+                    <strong th:text="${movement.type}">TIPO</strong>
+                    <span th:text="${movement.reference}">Referencia</span>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
