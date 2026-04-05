@@ -19,8 +19,7 @@ public class ProductController {
     }
 
     /**
-     * GET /products
-     * Devuelve todos los productos
+       * Devuelve todos los productos
      */
     @GetMapping
     public List<Product> getAllProducts() {
@@ -28,7 +27,7 @@ public class ProductController {
     }
 
     /**
-     * GET /products/{id}
+
      * Devuelve un producto según su id
      */
     @GetMapping("/{id}")
@@ -37,7 +36,7 @@ public class ProductController {
     }
 
     /**
-     * GET /products/category/{categoryId}
+
      * Devuelve todos los productos de una categoría
      */
     @GetMapping("/category/{categoryId}")
@@ -46,7 +45,7 @@ public class ProductController {
     }
 
     /**
-     * GET /products/name/{name}
+
      * Busca productos por nombre
      */
     @GetMapping("/name/{name}")
@@ -55,7 +54,7 @@ public class ProductController {
     }
 
     /**
-     * GET /products/location/{locationId}
+
      * Devuelve productos que tienen stock en una ubicación concreta
      */
     @GetMapping("/location/{locationId}")

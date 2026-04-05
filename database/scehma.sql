@@ -1,4 +1,3 @@
-
 CREATE TYPE role_name AS ENUM (
     'admin',
     'supervisor',
@@ -18,7 +17,6 @@ CREATE TYPE location_criticality AS ENUM (
     'baja'
 );
 
-
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -30,14 +28,10 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE
 );
-
-
 
 CREATE TABLE locations (
     id SERIAL PRIMARY KEY,
@@ -49,8 +43,6 @@ CREATE TABLE locations (
     coord_z NUMERIC(10,2)
 );
 
-
-
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
     sku VARCHAR(50) NOT NULL UNIQUE,
@@ -60,11 +52,8 @@ CREATE TABLE products (
     min_stock INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    FOREIGN KEY (category_id)
-        REFERENCES categories(id)
+    FOREIGN KEY (category_id) REFERENCES categories(id)
 );
-
 
 CREATE TABLE stock (
     id SERIAL PRIMARY KEY,
@@ -74,14 +63,9 @@ CREATE TABLE stock (
     product_id INT NOT NULL,
     lot_code VARCHAR(50),
     expiration_date DATE,
-
-    FOREIGN KEY (location_id)
-        REFERENCES locations(id),
-
-    FOREIGN KEY (product_id)
-        REFERENCES products(id)
+    FOREIGN KEY (location_id) REFERENCES locations(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
 );
-
 
 CREATE TABLE inventory_movements (
     id SERIAL PRIMARY KEY,
@@ -90,14 +74,9 @@ CREATE TABLE inventory_movements (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     cancelled_by INT,
     cancelled_at TIMESTAMP,
-
-    FOREIGN KEY (created_by)
-        REFERENCES users(id),
-
-    FOREIGN KEY (cancelled_by)
-        REFERENCES users(id)
+    FOREIGN KEY (created_by) REFERENCES users(id),
+    FOREIGN KEY (cancelled_by) REFERENCES users(id)
 );
-
 
 CREATE TABLE inventory_movement_lines (
     id SERIAL PRIMARY KEY,
@@ -106,20 +85,11 @@ CREATE TABLE inventory_movement_lines (
     from_location_id INT,
     to_location_id INT,
     qty INT NOT NULL,
-
-    FOREIGN KEY (movement_id)
-        REFERENCES inventory_movements(id),
-
-    FOREIGN KEY (product_id)
-        REFERENCES products(id),
-
-    FOREIGN KEY (from_location_id)
-        REFERENCES locations(id),
-
-    FOREIGN KEY (to_location_id)
-        REFERENCES locations(id)
+    FOREIGN KEY (movement_id) REFERENCES inventory_movements(id),
+    FOREIGN KEY (product_id) REFERENCES products(id),
+    FOREIGN KEY (from_location_id) REFERENCES locations(id),
+    FOREIGN KEY (to_location_id) REFERENCES locations(id)
 );
-
 
 CREATE INDEX idx_movements_created
 ON inventory_movements(created_at);

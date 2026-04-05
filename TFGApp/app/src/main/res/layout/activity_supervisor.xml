@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btnEntradas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Entradas"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnSalidas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Salidas"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnTransferencias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Transferencias"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnConsultasStock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Consultas Stock"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnHistorial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Historial de movimientos"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnEditar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Editar"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnCrear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Crear"
+            android:layout_marginBottom="16dp" />
+
+        <Button
+            android:id="@+id/btnAlertas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Alertas" />
+
+    </LinearLayout>
+</ScrollView>
