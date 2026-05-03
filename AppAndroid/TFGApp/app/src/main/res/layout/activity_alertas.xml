@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FCF5FC"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:paddingTop="60dp"
+    android:paddingBottom="24dp">
+
+    <TextView
+        android:id="@+id/txtTituloAlertas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Alertas"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="#1A1025"
+        android:gravity="center"
+        android:layout_marginBottom="20dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Productos debajo stock mínimo"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#1A1025"
+        android:layout_marginBottom="10dp" />
+
+    <ListView
+        android:id="@+id/listStockMinimo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:divider="#6D55AC"
+        android:dividerHeight="1dp"
+        android:padding="8dp"
+        android:layout_marginBottom="28dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Productos próximos a vencer"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#1A1025"
+        android:layout_marginBottom="10dp" />
+
+    <ListView
+        android:id="@+id/listProximosVencer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:divider="#6D55AC"
+        android:dividerHeight="1dp"
+        android:padding="8dp" />
+
+</LinearLayout>

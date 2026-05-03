@@ -1,0 +1,61 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="40dp">
+
+    <TextView
+        android:id="@+id/txtTituloStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Consulta de Stock"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="80dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/etUbicacionStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ubicación"
+        android:inputType="text"
+        android:completionThreshold="1"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/etProductoStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Producto (SKU o nombre)"
+        android:inputType="text"
+        android:completionThreshold="1"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp" />
+
+    <Button
+        android:id="@+id/btnConsultarStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Consultar stock"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="20dp"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#6D55AC"
+        android:layout_marginEnd="20dp" />
+
+    <TextView
+        android:id="@+id/txtResultadoStock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="18sp"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp" />
+
+</LinearLayout>

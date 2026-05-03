@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Inventario</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+
+<body>
+<div class="container">
+    <aside class="sidebar">
+        <h2 class="logo">Inventario</h2>
+        <nav>
+            <ul>
+                <li><a th:href="@{/dashboard}" class="active">Dashboard</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="topbar">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Resumen general del inventario</p>
+            </div>
+
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="logout-btn">Cerrar sesión</button>
+            </form>
+        </header>
+
+        <section class="cards">
+            <div class="card">
+                <span>Total Productos</span>
+                <h3 th:text="${totalProducts}">0</h3>
+            </div>
+
+            <div class="card">
+                <span>Total Registros Stock</span>
+                <h3 th:text="${totalStock}">0</h3>
+            </div>
+
+            <div class="card warning">
+                <span>Stock Bajo</span>
+                <h3 th:text="${lowStockAlerts.size()}">0</h3>
+            </div>
+
+            <div class="card danger">
+                <span>Próximos a vencer</span>
+                <h3 th:text="${expiringAlerts.size()}">0</h3>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Alertas de stock bajo</h2>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>SKU</th>
+                    <th>Stock total</th>
+                    <th>Mínimo</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="stock : ${lowStockAlerts}">
+                    <td th:text="${stock.productName}">Producto</td>
+                    <td th:text="${stock.productSku}">SKU</td>
+                    <td th:text="${stock.quantity}">0</td>
+                    <td th:text="${stock.minStock}">0</td>
+                </tr>
+
+                <tr th:if="${lowStockAlerts.isEmpty()}">
+                    <td colspan="4" class="empty">No hay alertas de stock bajo</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>Productos que vencen en menos de una semana</h2>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Ubicación</th>
+                    <th>Lote</th>
+                    <th>Caducidad</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="stock : ${expiringAlerts}">
+                    <td th:text="${stock.product.name}">Producto</td>
+                    <td th:text="${stock.location != null ? stock.location.name : '-'}">Ubicación</td>
+                    <td th:text="${stock.lotCode != null ? stock.lotCode : '-'}">Lote</td>
+                    <td th:text="${stock.expirationDate}">2026-03-10</td>
+                </tr>
+
+                <tr th:if="${expiringAlerts.isEmpty()}">
+                    <td colspan="4" class="empty">No hay productos próximos a vencer</td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>Últimos movimientos</h2>
+
+            <div class="movements">
+                <div class="movement-item" th:each="movement : ${movements}">
+
+                    <strong th:switch="${movement.type}">
+                        <span th:case="'IN'" class="type in">Entrada</span>
+                        <span th:case="'OUT'" class="type out">Salida</span>
+                        <span th:case="'TRANSFER'" class="type transfer">Transferencia</span>
+                        <span th:case="'ADJUST'" class="type adjust">Ajuste</span>
+                    </strong>
+
+                    <span>
+                        Producto:
+                        <b th:text="${movement.lines[0].product.name}">producto</b>
+                    </span>
+
+                    <span th:if="${movement.type == 'IN'}">
+                        Destino:
+                        <b th:text="${movement.lines[0].toLocation.name}">destino</b>
+                    </span>
+
+                    <span th:if="${movement.type == 'OUT'}">
+                        Origen:
+                        <b th:text="${movement.lines[0].fromLocation.name}">origen</b>
+                    </span>
+
+                    <span th:if="${movement.type == 'TRANSFER'}">
+                        De
+                        <b th:text="${movement.lines[0].fromLocation.name}"></b>
+                        a
+                        <b th:text="${movement.lines[0].toLocation.name}"></b>
+                    </span>
+
+                    <span>
+                        Usuario:
+                        <b th:text="${movement.createdBy.username}">usuario</b>
+                    </span>
+
+                    <small th:text="${#temporals.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}">
+                        fecha
+                    </small>
+                </div>
+
+                <div class="movement-item" th:if="${movements.isEmpty()}">
+                    <span>No hay movimientos recientes</span>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    setTimeout(() => {
+        location.reload();
+    }, 5000);
+</script>
+</body>
+</html>

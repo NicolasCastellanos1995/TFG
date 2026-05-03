@@ -1,0 +1,49 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#FCF5FC"
+    android:paddingStart="28dp"
+    android:paddingEnd="28dp">
+
+    <TextView
+        android:id="@+id/txtTituloEditarCategoria"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Editar Categoría"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#3E3944"
+        android:gravity="center"
+        android:layout_marginBottom="28dp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCategoriaExistente"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Seleccionar categoría existente"
+        android:inputType="none"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:clickable="true"
+        android:cursorVisible="false"
+        android:layout_marginBottom="20dp" />
+
+    <EditText
+        android:id="@+id/etNuevoNombreCategoria"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nuevo nombre de la categoría"
+        android:layout_marginBottom="30dp" />
+
+    <Button
+        android:id="@+id/btnGuardarCambiosCategoria"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="Guardar cambios"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:backgroundTint="#6D55AC" />
+
+</LinearLayout>

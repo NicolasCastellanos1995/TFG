@@ -1,0 +1,15 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.TFGApp" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">#FCF5FC</item>
+        <item name="android:colorAccent">#6D55AC</item>
+        <item name="colorPrimary">#6D55AC</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:statusBarColor">#FCF5FC</item>
+        <item name="android:navigationBarColor">#FCF5FC</item>
+    </style>
+
+    <style name="Theme.TFGApp" parent="Base.Theme.TFGApp" />
+</resources>

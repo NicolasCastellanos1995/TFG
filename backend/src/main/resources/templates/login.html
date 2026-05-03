@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body>
+
+<div class="login-container">
+
+    <!-- LOGO -->
+    <div class="logo-container">
+        <img src="/images/mi_logo.png" alt="Logo MiTFG">
+    </div>
+
+    <h2>Iniciar Sesión</h2>
+
+    <div th:if="${param.error}" class="error-message">
+        Usuario o contraseña incorrectos
+    </div>
+
+    <div th:if="${param.logout}" class="success-message">
+        Has cerrado sesión correctamente
+    </div>
+
+    <form th:action="@{/login}" method="post">
+        <div class="form-group">
+            <label for="username">Usuario</label>
+            <input type="text" id="username" name="username" placeholder="Ingresa tu usuario" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+        </div>
+
+        <button type="submit" class="login-btn">Entrar</button>
+    </form>
+</div>
+
+</body>
+</html>

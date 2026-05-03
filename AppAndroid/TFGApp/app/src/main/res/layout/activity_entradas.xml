@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#FCF5FC"
+    android:paddingStart="28dp"
+    android:paddingEnd="28dp">
+
+    <!-- ORIGEN -->
+    <EditText
+        android:id="@+id/ingProducto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Producto"
+        android:layout_marginBottom="20dp" />
+
+    <!-- DESTINO -->
+    <EditText
+        android:id="@+id/ingCantidad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Cantidad"
+        android:layout_marginBottom="30dp" />
+    <EditText
+        android:id="@+id/ingLote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Lote"
+        android:layout_marginBottom="30dp" />
+
+    <EditText
+        android:id="@+id/ingVencimiento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Fecha de caducidad"
+        android:focusable="false"
+        android:clickable="true"
+        android:layout_marginBottom="30dp" />
+    <!-- BOTÓN -->
+
+    <Button
+        android:id="@+id/btnTrasladar"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="INGRESAR"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:backgroundTint="#6D55AC" />
+
+</LinearLayout>

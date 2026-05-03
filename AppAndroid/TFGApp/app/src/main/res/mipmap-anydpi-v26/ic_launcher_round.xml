@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Fondo del icono adaptativo de Android. -->
+    <background android:drawable="@drawable/ic_launcher_background" />
+    <!-- Se usa el mismo logo mostrado dentro de la app (mi_logo.png) como icono principal. -->
+    <foreground android:drawable="@drawable/mi_logo" />
+    <!-- Versión monocromática usada por algunos launchers compatibles. -->
+    <monochrome android:drawable="@drawable/mi_logo" />
+</adaptive-icon>

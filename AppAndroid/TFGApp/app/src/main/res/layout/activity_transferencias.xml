@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#FCF5FC"
+    android:paddingStart="28dp"
+    android:paddingEnd="28dp">
+
+    <AutoCompleteTextView
+        android:id="@+id/etOrigen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Origen"
+        android:layout_marginBottom="20dp"
+        android:inputType="none" />
+
+    <AutoCompleteTextView
+        android:id="@+id/etDestino"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Destino"
+        android:layout_marginBottom="30dp"
+        android:inputType="none" />
+
+    <Button
+        android:id="@+id/btnTrasladar"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="TRASLADAR"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:backgroundTint="#6D55AC" />
+
+</LinearLayout>

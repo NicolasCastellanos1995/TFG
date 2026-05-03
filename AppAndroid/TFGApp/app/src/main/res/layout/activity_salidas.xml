@@ -1,0 +1,36 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#FCF5FC"
+    android:paddingStart="28dp"
+    android:paddingEnd="28dp">
+
+    <!-- ORIGEN -->
+    <EditText
+        android:id="@+id/retProducto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Producto"
+        android:layout_marginBottom="20dp" />
+
+    <!-- DESTINO -->
+    <EditText
+        android:id="@+id/retCantidad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Cantidad"
+        android:layout_marginBottom="30dp" />
+
+    <!-- BOTÓN -->
+    <Button
+        android:id="@+id/btnTrasladar"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:text="RETIRAR"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:backgroundTint="#6D55AC" />
+
+</LinearLayout>

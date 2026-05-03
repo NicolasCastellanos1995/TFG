@@ -1,0 +1,98 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FCF5FC"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="28dp"
+        android:paddingEnd="28dp"
+        android:paddingTop="80dp"
+        android:paddingBottom="32dp">
+
+        <!-- TÍTULO -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Editar ubicación"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#3E3944"
+            android:gravity="center"
+            android:layout_marginBottom="36dp" />
+
+        <AutoCompleteTextView
+            android:id="@+id/autoUbicacionExistente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Seleccionar ubicacion existente"
+            android:inputType="none"
+            android:focusable="false"
+            android:layout_marginBottom="20dp" />
+
+        <!-- CÓDIGO -->
+        <EditText
+            android:id="@+id/etEditarCodigo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Código"
+            android:maxLength="30" />
+
+        <!-- NOMBRE -->
+        <EditText
+            android:id="@+id/etEditarNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre"
+            android:layout_marginTop="16dp" />
+
+        <!-- DESPLEGABLE CRITICIDAD -->
+        <AutoCompleteTextView
+            android:id="@+id/autoEditarCriticidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Criticidad"
+            android:layout_marginTop="20dp" />
+
+        <!-- COORDENADAS -->
+        <EditText
+            android:id="@+id/etEditarCoordX"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Coordenada X"
+            android:inputType="numberDecimal"
+            android:layout_marginTop="16dp" />
+
+        <EditText
+            android:id="@+id/etEditarCoordY"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Coordenada Y"
+            android:inputType="numberDecimal"
+            android:layout_marginTop="16dp" />
+
+        <EditText
+            android:id="@+id/etEditarCoordZ"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Coordenada Z"
+            android:inputType="numberDecimal"
+            android:layout_marginTop="16dp" />
+
+        <!-- BOTÓN -->
+        <Button
+            android:id="@+id/btnGuardarUbicacionEditada"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Guardar Cambios"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:backgroundTint="#6D55AC"
+            android:layout_marginTop="30dp" />
+
+    </LinearLayout>
+
+</ScrollView>
