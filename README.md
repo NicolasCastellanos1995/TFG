@@ -160,7 +160,7 @@ http://10.0.2.2:8080
 
 #### Ejecución en dispositivo real
 
-2.
+
 1. Instalar la aplicacion ubicada en Aplicacionejecutable en tu movil
 2. Conectar el móvil a la misma red WiFi que el PC
 3. Obtener la IP del PC
