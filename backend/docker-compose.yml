@@ -1,21 +1,58 @@
-version: "3.8"
-
 services:
   postgres:
     image: postgres:16
     container_name: tfg_postgres
-    restart: always
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin1234
-      POSTGRES_DB: tfg_db
+      POSTGRES_DB: ${DB_NAME:-tfg_db}
+      POSTGRES_USER: ${DB_USER:?Define DB_USER en .env}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en .env}
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./database/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql 
-    
+      - ./database/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 15s
+    networks:
+      - tfg_network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tfg_backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-tfg_db}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:?Define DB_USER en .env}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en .env}
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en .env}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: "false"
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_COM_EXAMPLE_DEMO: INFO
+      LOGGING_FILE_NAME: /app/logs/tfg-application.log
+      SERVER_PORT: 8080
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - backend_logs:/app/logs
+    networks:
+      - tfg_network
 
 volumes:
   postgres_data:
+  backend_logs:
+
+networks:
+  tfg_network:
+    driver: bridge
