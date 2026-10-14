@@ -14,8 +14,3 @@ public class GeneratePass {
         System.out.println(encoder.encode("operario1234"));
     }
 }
-
-
-
-
-

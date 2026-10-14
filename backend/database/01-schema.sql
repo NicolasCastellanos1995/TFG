@@ -18,7 +18,7 @@ CREATE TYPE location_criticality AS ENUM (
 );
 
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
@@ -29,12 +29,12 @@ CREATE TABLE users (
 );
 
 CREATE TABLE categories (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE locations (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     code VARCHAR(30) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
     criticality location_criticality,
@@ -44,10 +44,10 @@ CREATE TABLE locations (
 );
 
 CREATE TABLE products (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     sku VARCHAR(50) NOT NULL UNIQUE,
     name VARCHAR(150) NOT NULL,
-    category_id INT NOT NULL,
+    category_id BIGINT NOT NULL,
     unit VARCHAR(20) NOT NULL,
     min_stock INT DEFAULT 0,
     criticality VARCHAR(20) NOT NULL,
@@ -57,11 +57,11 @@ CREATE TABLE products (
 );
 
 CREATE TABLE stock (
-    id SERIAL PRIMARY KEY,
-    location_id INT NOT NULL,
+    id BIGSERIAL PRIMARY KEY,
+    location_id BIGINT NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     quantity INT NOT NULL,
-    product_id INT NOT NULL,
+    product_id BIGINT NOT NULL,
     lot_code VARCHAR(50),
     expiration_date DATE,
     FOREIGN KEY (location_id) REFERENCES locations(id),
@@ -69,22 +69,22 @@ CREATE TABLE stock (
 );
 
 CREATE TABLE inventory_movements (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     type movement_type NOT NULL,
-    created_by INT NOT NULL,
+    created_by BIGINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    cancelled_by INT,
+    cancelled_by BIGINT,
     cancelled_at TIMESTAMP,
     FOREIGN KEY (created_by) REFERENCES users(id),
     FOREIGN KEY (cancelled_by) REFERENCES users(id)
 );
 
 CREATE TABLE inventory_movement_lines (
-    id SERIAL PRIMARY KEY,
-    movement_id INT NOT NULL,
-    product_id INT NOT NULL,
-    from_location_id INT,
-    to_location_id INT,
+    id BIGSERIAL PRIMARY KEY,
+    movement_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    from_location_id BIGINT,
+    to_location_id BIGINT,
     quantity INT NOT NULL,
     FOREIGN KEY (movement_id) REFERENCES inventory_movements(id),
     FOREIGN KEY (product_id) REFERENCES products(id),
@@ -97,4 +97,3 @@ ON inventory_movements(created_at);
 
 CREATE INDEX idx_movement_lines_movement
 ON inventory_movement_lines(movement_id);
-

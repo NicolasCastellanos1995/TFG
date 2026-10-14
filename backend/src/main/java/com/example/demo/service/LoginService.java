@@ -35,7 +35,7 @@ public class LoginService {
 
         User user = userOptional.get();
 
-        if (passwordEncoder.matches(password, user.getPassword())) {
+        if (Boolean.TRUE.equals(user.getActive()) && passwordEncoder.matches(password, user.getPassword())) {
             return user;
         }
 

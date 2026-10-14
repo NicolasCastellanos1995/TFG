@@ -2,4 +2,22 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Marca -->
+    <color name="brand">#6D55AC</color>
+    <color name="brand_dark">#574190</color>
+    <color name="brand_tint">#EFEBF8</color>
+
+    <!-- Neutros -->
+    <color name="ink">#1D1730</color>
+    <color name="ink_2">#4B4561</color>
+    <color name="muted">#6F6985</color>
+    <color name="line">#E4E0EE</color>
+    <color name="paper">#F6F4FA</color>
+
+    <!-- Estados (mismos colores que la web) -->
+    <color name="move_in">#2F8F63</color>
+    <color name="move_out">#C73E3E</color>
+    <color name="move_transfer">#3D6FB6</color>
+    <color name="warn">#B86F00</color>
 </resources>

@@ -1,8 +1,8 @@
+
 package com.example.demo.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import org.junit.jupiter.api.Test;
 
 /**
@@ -18,10 +18,10 @@ class CategoryTest {
     void gettersAndSettersWorkCorrectly() {
         Category category = new Category();
 
-        category.setId(1L);
+        category.setId(1);
         category.setName("Material sanitario");
 
-        assertEquals(1L, category.getId());
+        assertEquals(Integer.valueOf(1), category.getId());
         assertEquals("Material sanitario", category.getName());
         assertNotNull(category.getProducts());
     }

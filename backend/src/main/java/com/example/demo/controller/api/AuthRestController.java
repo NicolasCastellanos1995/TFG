@@ -43,20 +43,12 @@ public class AuthRestController {
 
         User user = userRepository.findByUsername(request.getUsername()).orElse(null);
 
-        if (user == null) {
-            return ResponseEntity.status(401).body("Usuario no encontrado");
+        if (user == null || !Boolean.TRUE.equals(user.getActive()) || request.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(401).body(Map.of("message", "Credenciales inválidas"));
         }
-
-          // Bloquear acceso a administradores
-         if ("ADMIN".equalsIgnoreCase(user.getRole())) {
-       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-        Map.of("message", "Los administradores no pueden acceder a esta aplicación")
-        );}
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(401).body("Contraseña incorrecta");
+        if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Acceso no permitido"));
         }
-
         String token = jwtService.generateToken(user.getUsername());
 
         String role = user.getRole(); 

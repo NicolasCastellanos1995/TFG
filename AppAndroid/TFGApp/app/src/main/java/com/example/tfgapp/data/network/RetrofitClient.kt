@@ -4,6 +4,7 @@
 package com.example.tfgapp.data.network
 
 import android.content.Context
+import com.example.tfgapp.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -21,7 +22,7 @@ object RetrofitClient {
     private var currentBaseUrl: String? = null
 
     private val logging: HttpLoggingInterceptor = HttpLoggingInterceptor().setLevel(
-        HttpLoggingInterceptor.Level.BODY
+        if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BASIC else HttpLoggingInterceptor.Level.NONE
     )
 
     private val client = OkHttpClient.Builder()

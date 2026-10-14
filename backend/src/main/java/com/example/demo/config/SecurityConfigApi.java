@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,6 +35,9 @@ public class SecurityConfigApi {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/products/**", "/api/categories/**", "/api/locations/**").hasRole("SUPERVISOR")
+                .requestMatchers(HttpMethod.PUT, "/api/products/**", "/api/categories/**", "/api/locations/**").hasRole("SUPERVISOR")
+                .requestMatchers(HttpMethod.DELETE, "/api/products/**", "/api/categories/**", "/api/locations/**").hasRole("SUPERVISOR")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

@@ -1,15 +1,82 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Base.Theme.TFGApp" parent="Theme.Material3.Light.NoActionBar">
-        <item name="android:windowBackground">#FCF5FC</item>
-        <item name="android:colorAccent">#6D55AC</item>
-        <item name="colorPrimary">#6D55AC</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="android:fontFamily">sans</item>
-        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="colorPrimary">@color/brand</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/brand_tint</item>
+        <item name="colorOnPrimaryContainer">@color/brand_dark</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/ink</item>
+        <item name="colorOutline">@color/line</item>
+        <item name="colorError">@color/move_out</item>
+        <item name="android:colorAccent">@color/brand</item>
+        <item name="android:windowBackground">@color/paper</item>
+        <item name="android:statusBarColor">@color/paper</item>
+        <item name="android:navigationBarColor">@color/paper</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="android:statusBarColor">#FCF5FC</item>
-        <item name="android:navigationBarColor">#FCF5FC</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/ink</item>
+
+        <item name="materialButtonStyle">@style/Widget.TFG.Button</item>
+        <item name="textInputStyle">@style/Widget.TFG.TextInput</item>
     </style>
 
     <style name="Theme.TFGApp" parent="Base.Theme.TFGApp" />
+
+    <!-- Botón principal: alto (50dp), esquinas suaves -->
+    <style name="Widget.TFG.Button" parent="Widget.Material3.Button">
+        <item name="android:minHeight">52dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="backgroundTint">@color/brand</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <!-- Botón secundario (contorno) -->
+    <style name="Widget.TFG.Button.Outline" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:minHeight">52dp</item>
+        <item name="android:textColor">@color/ink_2</item>
+        <item name="strokeColor">@color/line</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <!-- Azulejo del menú: icono arriba, texto debajo -->
+    <style name="Widget.TFG.Tile" parent="Widget.Material3.Button.OutlinedButton.Icon">
+        <item name="android:minHeight">112dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:backgroundTint">@color/white</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="strokeColor">@color/line</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="iconGravity">textTop</item>
+        <item name="iconSize">30dp</item>
+        <item name="iconPadding">10dp</item>
+    </style>
+
+    <style name="Widget.TFG.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxStrokeColor">@color/brand</item>
+        <item name="android:textColorHint">@color/muted</item>
+        <item name="hintTextColor">@color/brand</item>
+    </style>
+
+    <style name="TextAppearance.TFG.Title" parent="">
+        <item name="android:textSize">26sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+
+    <style name="TextAppearance.TFG.Subtitle" parent="">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/muted</item>
+    </style>
 </resources>

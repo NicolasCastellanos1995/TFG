@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class JwtServiceTest {
 
-    private final JwtService jwtService = new JwtService();
+    private final JwtService jwtService = new JwtService("test-secret-for-jwt-tests-32-bytes!");
 
     @Test
     void generateTokenCreatesValidTokenWithUsername() {

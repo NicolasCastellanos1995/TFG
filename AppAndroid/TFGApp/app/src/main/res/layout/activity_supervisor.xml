@@ -1,86 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-    <LinearLayout
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center">
+        android:layout_height="wrap_content"
+        android:text="Operaciones"
+        android:textAppearance="@style/TextAppearance.TFG.Title" />
 
-        <Button
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="20dp"
+        android:text="Registra movimientos y gestiona el catálogo"
+        android:textAppearance="@style/TextAppearance.TFG.Subtitle" />
+    <GridLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:columnCount="2">
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnEntradas"
-            android:layout_width="match_parent"
+            style="@style/Widget.TFG.Tile"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            
+            android:layout_margin="6dp"
             android:text="Entradas"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#6D55AC"
-            android:layout_marginBottom="16dp" />
+            app:icon="@drawable/ic_entrada"
+            app:iconTint="@color/move_in" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSalidas"
-            android:layout_width="match_parent"
+            style="@style/Widget.TFG.Tile"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            
+            android:layout_margin="6dp"
             android:text="Salidas"
-            android:backgroundTint="#6D55AC"
-            android:textColor="#FFFFFF"
-            android:layout_marginBottom="16dp" />
+            app:icon="@drawable/ic_salida"
+            app:iconTint="@color/move_out" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnTransferencias"
-            android:layout_width="match_parent"
+            style="@style/Widget.TFG.Tile"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            
+            android:layout_margin="6dp"
             android:text="Transferencias"
-            android:backgroundTint="#6D55AC"
-            android:textColor="#FFFFFF"
-            android:layout_marginBottom="16dp" />
+            app:icon="@drawable/ic_transfer"
+            app:iconTint="@color/move_transfer" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnConsultasStock"
-            android:layout_width="match_parent"
+            style="@style/Widget.TFG.Tile"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Consultas Stock"
-            android:backgroundTint="#6D55AC"
-            android:textColor="#FFFFFF"
-            android:layout_marginBottom="16dp" />
+            android:layout_columnWeight="1"
+            
+            android:layout_margin="6dp"
+            android:text="Consultar stock"
+            app:icon="@drawable/ic_stock"
+            app:iconTint="@color/brand" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnHistorial"
-            android:layout_width="match_parent"
+            style="@style/Widget.TFG.Tile"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Historial de movimientos"
-            android:backgroundTint="#6D55AC"
-            android:textColor="#FFFFFF"
-            android:layout_marginBottom="16dp" />
+            android:layout_columnWeight="1"
+            
+            android:layout_margin="6dp"
+            android:text="Historial"
+            app:icon="@drawable/ic_historial"
+            app:iconTint="@color/ink_2" />
 
-        <Button
-            android:id="@+id/btnEditar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Editar"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#6D55AC"
-            android:layout_marginBottom="16dp" />
-
-        <Button
-            android:id="@+id/btnCrear"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Crear"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#6D55AC"
-            android:layout_marginBottom="16dp" />
-
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAlertas"
-            android:layout_width="match_parent"
+            style="@style/Widget.TFG.Tile"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#6D55AC"
-            android:textColor="#FFFFFF"
-            android:text="Alertas" />
+            android:layout_columnWeight="1"
+            
+            android:layout_margin="6dp"
+            android:text="Alertas"
+            app:icon="@drawable/ic_alerta"
+            app:iconTint="@color/warn" />
 
-    </LinearLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCrear"
+            style="@style/Widget.TFG.Tile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            
+            android:layout_margin="6dp"
+            android:text="Crear"
+            app:icon="@drawable/ic_crear"
+            app:iconTint="@color/brand" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEditar"
+            style="@style/Widget.TFG.Tile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            
+            android:layout_margin="6dp"
+            android:text="Editar"
+            app:icon="@drawable/ic_editar"
+            app:iconTint="@color/brand" />
+
+    </GridLayout>
+</LinearLayout>
 </ScrollView>

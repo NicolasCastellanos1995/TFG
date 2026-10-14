@@ -41,7 +41,6 @@ The content is organized as follows:
 
 <directory_structure>
 .gitignore
-Aplicacionejecutable/app-debug.apk
 AppAndroid/TFGApp/.gitignore
 AppAndroid/TFGApp/app/.gitignore
 AppAndroid/TFGApp/app/build.gradle.kts
@@ -129,29 +128,29 @@ AppAndroid/TFGApp/app/src/main/res/xml/backup_rules.xml
 AppAndroid/TFGApp/app/src/main/res/xml/data_extraction_rules.xml
 AppAndroid/TFGApp/app/src/test/java/com/example/tfgapp/ExampleUnitTest.kt
 AppAndroid/TFGApp/build.gradle.kts
-AppAndroid/TFGApp/dockerfile
 AppAndroid/TFGApp/gradle.properties
 AppAndroid/TFGApp/gradle/libs.versions.toml
 AppAndroid/TFGApp/gradle/wrapper/gradle-wrapper.jar
 AppAndroid/TFGApp/gradle/wrapper/gradle-wrapper.properties
 AppAndroid/TFGApp/gradlew
 AppAndroid/TFGApp/gradlew.bat
-AppAndroid/TFGApp/local.properties
 AppAndroid/TFGApp/settings.gradle.kts
-backend/.env
+backend/.dockerignore
+backend/.env.example
 backend/.gitattributes
+backend/.gitignore
 backend/.mvn/wrapper/maven-wrapper.properties
 backend/database/01-schema.sql
 backend/database/02-seed.sql
+backend/database/migrations/20261014_align_id_columns_bigint.sql
 backend/docker-compose.yml
-backend/logs/.gitkeep
-backend/logs/tfg-application.log.2026-05-02.0.gz
-backend/logs/tfg-application.log.2026-05-03.0.gz
-backend/logs/tfg-application.log.2026-05-04.0.gz
-backend/logs/tfg-application.log.2026-05-15.0.gz
+backend/Dockerfile
+backend/Dockerfile.lambda
 backend/mvnw
 backend/mvnw.cmd
 backend/pom.xml
+backend/scripts/start.ps1
+backend/scripts/start.sh
 backend/src/main/java/com/example/demo/config/LogDirectoryInitializer.java
 backend/src/main/java/com/example/demo/config/SecurityConfigApi.java
 backend/src/main/java/com/example/demo/config/SecurityConfigWeb.java
@@ -240,41 +239,201 @@ backend/src/test/java/com/example/demo/TfgApplicationTests.java
 Documentacion/~$emoria.docx
 Documentacion/memoria.docx
 Documentacion/presentacion_tfg.pptx
+INSTRUCCIONES_CORRECCIONES.md
 README.md
+src/main/java/com/example/demo/security/JwtService.java
+src/main/resources/application.properties
 </directory_structure>
 
 <files>
 This section contains the contents of the repository's files.
 
-<file path="AppAndroid/TFGApp/dockerfile">
-
+<file path="backend/.dockerignore">
+.git
+.env
+.env.*
+!.env.example
+logs
+*.log
+target
+README-local-secrets.txt
 </file>
 
-<file path="backend/.env">
-spring.datasource.url=jdbc:postgresql://localhost:5433/tfg_db
-spring.datasource.username=admin
-spring.datasource.password=admin1234
-spring.datasource.driver-class-name=org.postgresql.Driver
+<file path="backend/.env.example">
+# Copia a .env y configura valores reales; NUNCA subas .env
+DB_TARGET=docker   // opciones docker y neon
+DB_NAME=tfg_db
+DB_USER=tfg_user
+DB_PASSWORD=CAMBIA_ESTA_CLAVE
+DB_POOL_SIZE=2
+NEON_DB_JDBC_URL=jdbc:postgresql://HOST.neon.tech:5432/neondb?sslmode=require
+NEON_DB_USERNAME=USUARIO_NEON
+NEON_DB_PASSWORD=CAMBIA_ESTA_CLAVE
+JWT_SECRET=REEMPLAZAR_POR_AL_MENOS_32_BYTES_ALEATORIOS
+APP_PORT=8080
+APP_BIND=127.0.0.1
+SESSION_COOKIE_SECURE=false
+</file>
 
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
-# Configuracion de logs
-# Guarda los logs de la aplicacion en la carpeta logs, dentro de la raiz del proyecto.
-logging.file.name=logs/tfg-application.log
+<file path="backend/.gitignore">
+.env
+.env.*
+!.env.example
+logs/
+target/
+</file>
 
-# Nivel general de logs de la aplicacion.
-logging.level.root=INFO
-logging.level.com.example.demo=DEBUG
+<file path="backend/database/migrations/20261014_align_id_columns_bigint.sql">
+-- Apply once to an existing database created from the original 01-schema.sql.
+-- This preserves row data while aligning SERIAL/INTEGER identifiers with JPA Long.
+BEGIN;
 
-# Formato de los logs en consola y fichero.
-logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
-logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
+ALTER TABLE products DROP CONSTRAINT products_category_id_fkey;
+ALTER TABLE stock
+    DROP CONSTRAINT stock_location_id_fkey,
+    DROP CONSTRAINT stock_product_id_fkey;
+ALTER TABLE inventory_movements
+    DROP CONSTRAINT inventory_movements_created_by_fkey,
+    DROP CONSTRAINT inventory_movements_cancelled_by_fkey;
+ALTER TABLE inventory_movement_lines
+    DROP CONSTRAINT inventory_movement_lines_movement_id_fkey,
+    DROP CONSTRAINT inventory_movement_lines_product_id_fkey,
+    DROP CONSTRAINT inventory_movement_lines_from_location_id_fkey,
+    DROP CONSTRAINT inventory_movement_lines_to_location_id_fkey;
 
-# Rotacion del fichero de logs para evitar que crezca indefinidamente.
-logging.logback.rollingpolicy.max-file-size=10MB
-logging.logback.rollingpolicy.max-history=30
+ALTER TABLE users ALTER COLUMN id TYPE BIGINT;
+ALTER TABLE categories ALTER COLUMN id TYPE BIGINT;
+ALTER TABLE locations ALTER COLUMN id TYPE BIGINT;
+ALTER TABLE products
+    ALTER COLUMN id TYPE BIGINT,
+    ALTER COLUMN category_id TYPE BIGINT;
+ALTER TABLE stock
+    ALTER COLUMN id TYPE BIGINT,
+    ALTER COLUMN location_id TYPE BIGINT,
+    ALTER COLUMN product_id TYPE BIGINT;
+ALTER TABLE inventory_movements
+    ALTER COLUMN id TYPE BIGINT,
+    ALTER COLUMN created_by TYPE BIGINT,
+    ALTER COLUMN cancelled_by TYPE BIGINT;
+ALTER TABLE inventory_movement_lines
+    ALTER COLUMN id TYPE BIGINT,
+    ALTER COLUMN movement_id TYPE BIGINT,
+    ALTER COLUMN product_id TYPE BIGINT,
+    ALTER COLUMN from_location_id TYPE BIGINT,
+    ALTER COLUMN to_location_id TYPE BIGINT;
+
+ALTER SEQUENCE users_id_seq AS BIGINT;
+ALTER SEQUENCE categories_id_seq AS BIGINT;
+ALTER SEQUENCE locations_id_seq AS BIGINT;
+ALTER SEQUENCE products_id_seq AS BIGINT;
+ALTER SEQUENCE stock_id_seq AS BIGINT;
+ALTER SEQUENCE inventory_movements_id_seq AS BIGINT;
+ALTER SEQUENCE inventory_movement_lines_id_seq AS BIGINT;
+
+ALTER TABLE products
+    ADD CONSTRAINT products_category_id_fkey
+    FOREIGN KEY (category_id) REFERENCES categories(id);
+ALTER TABLE stock
+    ADD CONSTRAINT stock_location_id_fkey
+        FOREIGN KEY (location_id) REFERENCES locations(id),
+    ADD CONSTRAINT stock_product_id_fkey
+        FOREIGN KEY (product_id) REFERENCES products(id);
+ALTER TABLE inventory_movements
+    ADD CONSTRAINT inventory_movements_created_by_fkey
+        FOREIGN KEY (created_by) REFERENCES users(id),
+    ADD CONSTRAINT inventory_movements_cancelled_by_fkey
+        FOREIGN KEY (cancelled_by) REFERENCES users(id);
+ALTER TABLE inventory_movement_lines
+    ADD CONSTRAINT inventory_movement_lines_movement_id_fkey
+        FOREIGN KEY (movement_id) REFERENCES inventory_movements(id),
+    ADD CONSTRAINT inventory_movement_lines_product_id_fkey
+        FOREIGN KEY (product_id) REFERENCES products(id),
+    ADD CONSTRAINT inventory_movement_lines_from_location_id_fkey
+        FOREIGN KEY (from_location_id) REFERENCES locations(id),
+    ADD CONSTRAINT inventory_movement_lines_to_location_id_fkey
+        FOREIGN KEY (to_location_id) REFERENCES locations(id);
+
+COMMIT;
+</file>
+
+<file path="backend/Dockerfile.lambda">
+FROM maven:3.9-eclipse-temurin-25 AS build
+WORKDIR /build
+COPY pom.xml ./
+RUN mvn -B -DskipTests dependency:go-offline
+COPY src ./src
+RUN mvn -B -DskipTests package
+
+FROM public.ecr.aws/awsguru/aws-lambda-adapter:0.9.1 AS adapter
+FROM eclipse-temurin:25-jre
+WORKDIR /app
+COPY --from=adapter /lambda-adapter /opt/extensions/lambda-adapter
+COPY --from=build /build/target/*.jar /app/app.jar
+ENV PORT=8080 AWS_LWA_PORT=8080 AWS_LWA_READINESS_CHECK_PATH=/ \
+    AWS_LWA_READINESS_CHECK_PROTOCOL=http JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=70"
+EXPOSE 8080
+CMD ["java", "-jar", "/app/app.jar"]
+</file>
+
+<file path="backend/scripts/start.ps1">
+$ErrorActionPreference = 'Stop'
+Set-Location (Join-Path $PSScriptRoot '..')
+Get-Content .env | ForEach-Object { if ($_ -match '^([A-Za-z_][A-Za-z0-9_]*)=(.*)$') { [Environment]::SetEnvironmentVariable($matches[1], $matches[2].Trim('"'), 'Process') } }
+$target = $env:DB_TARGET.Trim().ToLowerInvariant()
+if ($target -eq 'docker') {
+  $name = if ($env:DB_NAME) { $env:DB_NAME } else { 'tfg_db' }
+  $env:SELECTED_DB_URL = "jdbc:postgresql://postgres:5432/$name"
+  $env:SELECTED_DB_USER = $env:DB_USER; $env:SELECTED_DB_PASSWORD = $env:DB_PASSWORD
+  docker compose --profile docker-db up -d postgres
+} elseif ($target -eq 'neon') {
+  $env:SELECTED_DB_URL = $env:NEON_DB_JDBC_URL; $env:SELECTED_DB_USER = $env:NEON_DB_USERNAME; $env:SELECTED_DB_PASSWORD = $env:NEON_DB_PASSWORD
+} else { throw 'DB_TARGET debe ser docker o neon' }
+docker compose up -d --build backend
+</file>
+
+<file path="backend/scripts/start.sh">
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+set -a; source ./.env; set +a
+target=$(printf '%s' "${DB_TARGET:-docker}" | tr '[:upper:]' '[:lower:]')
+case "$target" in
+ docker) export SELECTED_DB_URL="jdbc:postgresql://postgres:5432/${DB_NAME:-tfg_db}" SELECTED_DB_USER="$DB_USER" SELECTED_DB_PASSWORD="$DB_PASSWORD"; docker compose --profile docker-db up -d postgres; docker compose up -d --build backend;;
+ neon) export SELECTED_DB_URL="$NEON_DB_JDBC_URL" SELECTED_DB_USER="$NEON_DB_USERNAME" SELECTED_DB_PASSWORD="$NEON_DB_PASSWORD"; docker compose up -d --build backend;;
+ *) echo 'DB_TARGET debe ser docker o neon' >&2; exit 1;;
+esac
+</file>
+
+<file path="INSTRUCCIONES_CORRECCIONES.md">
+# Entrega reconstruida desde Repomix
+
+**Aviso:** este ZIP reconstruye solo los archivos de texto presentes en el XML; NO contiene binarios originales (APK, imágenes, JAR, DOCX, PPTX). No se ha podido compilar ni ejecutar contra una base de datos real en esta revisión. No contiene el `.env` real.
+
+## Arranque
+1. Copia `backend/.env.example` a `backend/.env`. Genera `JWT_SECRET` aleatorio de al menos 32 bytes y pon credenciales nuevas.
+2. Cambia `DB_TARGET=docker` o `DB_TARGET=neon`. Neon requiere URL JDBC con `sslmode=require`.
+3. En Linux/macOS: `cd backend && bash scripts/start.sh`; en Windows PowerShell: `cd backend; ./scripts/start.ps1`.
+4. Web local: `http://localhost:8080`. Android emulador: `http://10.0.2.2:8080/`.
+5. Para un teléfono físico local, cambia `APP_BIND=0.0.0.0` y configura `http://IP_LAN_DEL_PC:8080/` en Android DEBUG **solo en red de confianza**. Para producción, usa HTTPS y compila Android release.
+6. Si usas Docker y Neon, no hace falta arrancar PostgreSQL local. Si vuelves a Docker, el script arranca el servicio postgres.
+
+## Cambios
+- Selección de PostgreSQL desde `.env` a través de scripts de inicio.
+- Alineadas las variables JDBC de Compose y Spring.
+- Cookie secure parametrizada para desarrollo HTTP; usar `SESSION_COOKIE_SECURE=true` bajo HTTPS.
+- Login rechaza cuentas inactivas y mensajes de credenciales uniformes.
+- Autorización por rol supervisor en escrituras del catálogo.
+- Borrado de usuarios vía POST con protección CSRF de Spring Security.
+- Android sin logs de cuerpos y sin cleartext en release; backup deshabilitado.
+- Docker Lambda actualizado a Java 25.
+
+## Límites y comprobaciones pendientes
+- Revisar scripts SQL y esquema `ddl-auto=validate` contra las bases reales; una BBDD Neon vacía necesita migración/inicialización antes de arrancar.
+- Comprobar rutas y permisos de movimientos, riesgos de concurrencia y lógica de negocio con pruebas de integración.
+- Confirmar que el backend compila y que la web y Android hacen login real.
+- No distribuir el APK antiguo: recompilar Android; el APK original no se incluye en el XML.
+- La protección de CSRF en formularios Thymeleaf depende de la integración Spring Security/Thymeleaf: verificar en ejecución.
+- Si se expusieron credenciales en Repomix o Git, rotar las contraseñas y el secreto JWT.
 </file>
 
 <file path=".gitignore">
@@ -311,6 +470,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+**/.env
+**/.env.*
+!**/.env.example
+**/local.properties
+**/logs/
+*.apk
 </file>
 
 <file path="AppAndroid/TFGApp/.gitignore">
@@ -342,7 +508,9 @@ android {
     }
 
     buildTypes {
+        debug { manifestPlaceholders["cleartextTraffic"] = "true" }
         release {
+            manifestPlaceholders["cleartextTraffic"] = "false"
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -353,6 +521,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -455,7 +624,7 @@ class ExampleInstrumentedTest {
 
     <application
         android:name=".TFGApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -463,7 +632,7 @@ class ExampleInstrumentedTest {
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.TFGApp"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="${cleartextTraffic}">
 
         <activity android:name=".ui.config.ServerConfigActivity" />
         <activity android:name=".ui.home.SupervisorActivity" />
@@ -949,6 +1118,7 @@ interface ApiService {
 package com.example.tfgapp.data.network
 
 import android.content.Context
+import com.example.tfgapp.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -966,7 +1136,7 @@ object RetrofitClient {
     private var currentBaseUrl: String? = null
 
     private val logging: HttpLoggingInterceptor = HttpLoggingInterceptor().setLevel(
-        HttpLoggingInterceptor.Level.BODY
+        if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BASIC else HttpLoggingInterceptor.Level.NONE
     )
 
     private val client = OkHttpClient.Builder()
@@ -5505,19 +5675,6 @@ if "%OS%"=="Windows_NT" endlocal
 :omega
 </file>
 
-<file path="AppAndroid/TFGApp/local.properties">
-## This file is automatically generated by Android Studio.
-# Do not modify this file -- YOUR CHANGES WILL BE ERASED!
-#
-# This file should *NOT* be checked into Version Control Systems,
-# as it contains information specific to your local configuration.
-#
-# Location of the SDK. This is only used by Gradle.
-# For customization when using a Version Control System, please read the
-# header note.
-sdk.dir=C\:\\Users\\Ncasl\\AppData\\Local\\Android\\Sdk
-</file>
-
 <file path="AppAndroid/TFGApp/settings.gradle.kts">
 pluginManagement {
     repositories {
@@ -5576,7 +5733,7 @@ CREATE TYPE location_criticality AS ENUM (
 );
 
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
@@ -5587,12 +5744,12 @@ CREATE TABLE users (
 );
 
 CREATE TABLE categories (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE
 );
 
 CREATE TABLE locations (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     code VARCHAR(30) NOT NULL UNIQUE,
     name VARCHAR(100) NOT NULL,
     criticality location_criticality,
@@ -5602,10 +5759,10 @@ CREATE TABLE locations (
 );
 
 CREATE TABLE products (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     sku VARCHAR(50) NOT NULL UNIQUE,
     name VARCHAR(150) NOT NULL,
-    category_id INT NOT NULL,
+    category_id BIGINT NOT NULL,
     unit VARCHAR(20) NOT NULL,
     min_stock INT DEFAULT 0,
     criticality VARCHAR(20) NOT NULL,
@@ -5615,11 +5772,11 @@ CREATE TABLE products (
 );
 
 CREATE TABLE stock (
-    id SERIAL PRIMARY KEY,
-    location_id INT NOT NULL,
+    id BIGSERIAL PRIMARY KEY,
+    location_id BIGINT NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     quantity INT NOT NULL,
-    product_id INT NOT NULL,
+    product_id BIGINT NOT NULL,
     lot_code VARCHAR(50),
     expiration_date DATE,
     FOREIGN KEY (location_id) REFERENCES locations(id),
@@ -5627,22 +5784,22 @@ CREATE TABLE stock (
 );
 
 CREATE TABLE inventory_movements (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     type movement_type NOT NULL,
-    created_by INT NOT NULL,
+    created_by BIGINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    cancelled_by INT,
+    cancelled_by BIGINT,
     cancelled_at TIMESTAMP,
     FOREIGN KEY (created_by) REFERENCES users(id),
     FOREIGN KEY (cancelled_by) REFERENCES users(id)
 );
 
 CREATE TABLE inventory_movement_lines (
-    id SERIAL PRIMARY KEY,
-    movement_id INT NOT NULL,
-    product_id INT NOT NULL,
-    from_location_id INT,
-    to_location_id INT,
+    id BIGSERIAL PRIMARY KEY,
+    movement_id BIGINT NOT NULL,
+    product_id BIGINT NOT NULL,
+    from_location_id BIGINT,
+    to_location_id BIGINT,
     quantity INT NOT NULL,
     FOREIGN KEY (movement_id) REFERENCES inventory_movements(id),
     FOREIGN KEY (product_id) REFERENCES products(id),
@@ -5728,44 +5885,6 @@ VALUES
 ('SKU-007', 'Arroz 1kg', (SELECT id FROM categories WHERE name = 'Alimentos'), 'unidad', 40, 'BAJA'),
 ('SKU-008', 'Zumo Naranja 1L', (SELECT id FROM categories WHERE name = 'Bebidas'), 'unidad', 20, 'MEDIA')
 ON CONFLICT (sku) DO NOTHING;
-</file>
-
-<file path="backend/docker-compose.yml">
-version: "3.8"
-
-services:
-  postgres:
-    image: postgres:16
-    container_name: tfg_postgres
-    restart: always
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin1234
-      POSTGRES_DB: tfg_db
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./database/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
-      - ./database/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql 
-    
-  app:
-    build: .
-    restart: unless-stopped
-    env_file:
-      - .env
-    ports:
-      - "${APP_PORT}:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-
-volumes:
-  postgres_data:
-</file>
-
-<file path="backend/logs/.gitkeep">
-
 </file>
 
 <file path="backend/mvnw">
@@ -6258,110 +6377,6 @@ try {
 Write-Output "MVN_CMD=$MAVEN_HOME/bin/$MVN_CMD"
 </file>
 
-<file path="backend/pom.xml">
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-	<modelVersion>4.0.0</modelVersion>
-
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.6</version>
-		<relativePath/>
-	</parent>
-
-	<groupId>com.example</groupId>
-	<artifactId>demo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>TFG</name>
-	<description>Backend Spring Boot con JWT para TFG</description>
-
-	<properties>
-		<java.version>21</java.version>
-		<jjwt.version>0.11.5</jjwt.version>
-	</properties>
-
-	<dependencies>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-api</artifactId>
-			<version>${jjwt.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-impl</artifactId>
-			<version>${jjwt.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId>
-			<version>${jjwt.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
-</project>
-</file>
-
 <file path="backend/src/main/java/com/example/demo/config/LogDirectoryInitializer.java">
 package com.example.demo.config;
 
@@ -6404,6 +6419,7 @@ public class LogDirectoryInitializer implements ApplicationRunner {
 package com.example.demo.config;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -6437,6 +6453,9 @@ public class SecurityConfigApi {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/products/**", "/api/categories/**", "/api/locations/**").hasRole("SUPERVISOR")
+                .requestMatchers(HttpMethod.PUT, "/api/products/**", "/api/categories/**", "/api/locations/**").hasRole("SUPERVISOR")
+                .requestMatchers(HttpMethod.DELETE, "/api/products/**", "/api/categories/**", "/api/locations/**").hasRole("SUPERVISOR")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
@@ -6634,20 +6653,12 @@ public class AuthRestController {
 
         User user = userRepository.findByUsername(request.getUsername()).orElse(null);
 
-        if (user == null) {
-            return ResponseEntity.status(401).body("Usuario no encontrado");
+        if (user == null || !Boolean.TRUE.equals(user.getActive()) || request.getPassword() == null || !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(401).body(Map.of("message", "Credenciales inválidas"));
         }
-
-          // Bloquear acceso a administradores
-         if ("ADMIN".equalsIgnoreCase(user.getRole())) {
-       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
-        Map.of("message", "Los administradores no pueden acceder a esta aplicación")
-        );}
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(401).body("Contraseña incorrecta");
+        if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Acceso no permitido"));
         }
-
         String token = jwtService.generateToken(user.getUsername());
 
         String role = user.getRole(); 
@@ -7345,7 +7356,7 @@ public String updateUser(@ModelAttribute("user") User user,
     return "redirect:/admin";
 }
 
-    @GetMapping("/users/delete/{id}")
+    @PostMapping("/users/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
         userRepository.deleteById(id);
         return "redirect:/admin";
@@ -9036,6 +9047,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
+                Boolean.TRUE.equals(user.getActive()), true, true, true,
                 List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().toUpperCase()))
         );
     }
@@ -9095,7 +9107,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = jwtService.extractUsername(token);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+            UserDetails userDetails;
+            try { userDetails = customUserDetailsService.loadUserByUsername(username); }
+            catch (org.springframework.security.core.userdetails.UsernameNotFoundException ex) { filterChain.doFilter(request, response); return; }
+            if (!userDetails.isEnabled()) { filterChain.doFilter(request, response); return; }
 
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(
@@ -9125,6 +9140,7 @@ import java.util.Date;
 import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -9137,11 +9153,18 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-    private static final String SECRET = "clave_super_secreta_para_jwt_12345678901234567890";
+    private final String secret;
+
+    public JwtService(@Value("${JWT_SECRET}") String secret) {
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalArgumentException("JWT_SECRET debe tener al menos 32 bytes");
+        }
+        this.secret = secret;
+    }
     private static final long EXPIRATION_MS = 86400000;
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(String username) {
@@ -9476,7 +9499,7 @@ public class LoginService {
 
         User user = userOptional.get();
 
-        if (passwordEncoder.matches(password, user.getPassword())) {
+        if (Boolean.TRUE.equals(user.getActive()) && passwordEncoder.matches(password, user.getPassword())) {
             return user;
         }
 
@@ -10163,36 +10186,6 @@ public class TfgApplication {
         SpringApplication.run(TfgApplication.class, args);
     }
 }
-</file>
-
-<file path="backend/src/main/resources/application.properties">
-spring.application.name=TFG
-
-
-spring.datasource.url=jdbc:postgresql://localhost:5433/tfg_db
-spring.datasource.username=admin
-spring.datasource.password=admin1234
-spring.datasource.driver-class-name=org.postgresql.Driver
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
-# Configuracion de logs
-# Guarda los logs de la aplicacion en la carpeta logs, dentro de la raiz del proyecto.
-logging.file.name=logs/tfg-application.log
-
-# Nivel general de logs de la aplicacion.
-logging.level.root=INFO
-logging.level.com.example.demo=DEBUG
-
-# Formato de los logs en consola y fichero.
-logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
-logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
-
-# Rotacion del fichero de logs para evitar que crezca indefinidamente.
-logging.logback.rollingpolicy.max-file-size=10MB
-logging.logback.rollingpolicy.max-history=30
 </file>
 
 <file path="backend/src/main/resources/static/css/admin.css">
@@ -11062,11 +11055,9 @@ body {
                                         Editar
                                     </a>
 
-                                    <a th:href="@{/admin/users/delete/{id}(id=${user.id})}"
-                                       class="btn btn-sm btn-outline-danger"
-                                       onclick="return confirm('¿Seguro que quieres eliminar este usuario?');">
-                                        Eliminar
-                                    </a>
+                                    <form th:action="@{/admin/users/delete/{id}(id=${user.id})}" method="post" onsubmit="return confirm('¿Seguro que quieres eliminar este usuario?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -11656,7 +11647,7 @@ import org.junit.jupiter.api.Test;
 
 class JwtServiceTest {
 
-    private final JwtService jwtService = new JwtService();
+    private final JwtService jwtService = new JwtService("test-secret-for-jwt-tests-32-bytes!");
 
     @Test
     void generateTokenCreatesValidTokenWithUsername() {
@@ -12695,6 +12686,90 @@ class TfgApplicationTests {
 }
 </file>
 
+<file path="backend/docker-compose.yml">
+services:
+  postgres:
+    image: postgres:16
+    profiles: [docker-db]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-tfg_db}
+      POSTGRES_USER: ${DB_USER:?Falta DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test:
+        
+        - CMD-SHELL
+        - 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"'
+      interval: 5s
+      timeout: 5s
+      retries: 15
+  backend:
+    build: .
+    restart: unless-stopped
+    environment:
+      DB_JDBC_URL: ${SELECTED_DB_URL:?Ejecuta scripts/start.sh o scripts/start.ps1}
+      DB_USERNAME: ${SELECTED_DB_USER:?Falta SELECTED_DB_USER}
+      DB_PASSWORD: ${SELECTED_DB_PASSWORD:?Falta SELECTED_DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Falta JWT_SECRET}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-2}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+    ports:
+      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-8080}:8080"
+    volumes:
+      - backend_logs:/app/logs
+volumes:
+  postgres_data:
+  backend_logs:
+</file>
+
+<file path="backend/Dockerfile">
+FROM maven:3.9-eclipse-temurin-25 AS build
+WORKDIR /build
+COPY pom.xml ./
+RUN mvn -B -DskipTests dependency:go-offline
+COPY src ./src
+RUN mvn -B -DskipTests package
+
+FROM eclipse-temurin:25-jre
+WORKDIR /app
+RUN groupadd --system app && useradd --system --gid app --home-dir /app app \
+    && mkdir -p /app/logs && chown -R app:app /app
+COPY --from=build --chown=app:app /build/target/*.jar /app/app.jar
+USER app
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+</file>
+
+<file path="backend/src/main/resources/application.properties">
+spring.application.name=TFG
+server.port=${PORT:8080}
+spring.datasource.url=${DB_JDBC_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.hikari.maximum-pool-size=${DB_POOL_SIZE:2}
+spring.datasource.hikari.minimum-idle=0
+spring.datasource.hikari.connection-timeout=10000
+spring.datasource.hikari.idle-timeout=30000
+spring.datasource.hikari.max-lifetime=1200000
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.open-in-view=false
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+logging.level.root=INFO
+logging.level.com.example.demo=INFO
+server.forward-headers-strategy=framework
+server.servlet.session.cookie.secure=${SESSION_COOKIE_SECURE:false}
+server.servlet.session.cookie.same-site=lax
+</file>
+
 <file path="README.md">
 # Sistema de Gestión de Inventario con FEFO y Slotting Inteligente
 
@@ -12858,7 +12933,7 @@ http://10.0.2.2:8080
 
 #### Ejecución en dispositivo real
 
-2.
+
 1. Instalar la aplicacion ubicada en Aplicacionejecutable en tu movil
 2. Conectar el móvil a la misma red WiFi que el PC
 3. Obtener la IP del PC
@@ -12900,6 +12975,201 @@ Este sistema no solo almacena información, sino que aplica lógica de negocio:
 ## Autor
 
 Nicolás Castellanos
+</file>
+
+<file path="src/main/java/com/example/demo/security/JwtService.java">
+package com.example.demo.security;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+
+/**
+ * Servicio encargado de generar, leer y validar tokens JWT.
+ */
+@Service
+public class JwtService {
+
+    private final String secret;
+
+    public JwtService(@Value("${JWT_SECRET}") String secret) {
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalArgumentException("JWT_SECRET debe tener al menos 32 bytes");
+        }
+        this.secret = secret;
+    }
+    private static final long EXPIRATION_MS = 86400000;
+
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String generateToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String extractUsername(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
+    }
+
+    public boolean isTokenValid(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+}
+</file>
+
+<file path="backend/pom.xml">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.12</version>
+		<relativePath/>
+	</parent>
+
+	<groupId>com.example</groupId>
+	<artifactId>demo</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>TFG</name>
+	<description>Backend Spring Boot con JWT para TFG</description>
+
+	<properties>
+		<java.version>25</java.version>
+		<jjwt.version>0.11.5</jjwt.version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>${jjwt.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>${jjwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>${jjwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
+</file>
+
+<file path="src/main/resources/application.properties">
+spring.application.name=TFG
+server.port=${PORT:8080}
+spring.datasource.url=${DB_JDBC_URL}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.datasource.hikari.maximum-pool-size=${DB_POOL_SIZE:2}
+spring.datasource.hikari.minimum-idle=0
+spring.datasource.hikari.connection-timeout=10000
+spring.datasource.hikari.idle-timeout=30000
+spring.datasource.hikari.max-lifetime=1200000
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.open-in-view=false
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.format_sql=false
+logging.level.root=INFO
+logging.level.com.example.demo=INFO
+server.forward-headers-strategy=framework
+server.servlet.session.cookie.secure=true
+server.servlet.session.cookie.same-site=lax
 </file>
 
 </files>

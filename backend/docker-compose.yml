@@ -1,12 +1,12 @@
 services:
   postgres:
     image: postgres:16
-    container_name: tfg_postgres
+    profiles: [docker-db]
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME:-tfg_db}
-      POSTGRES_USER: ${DB_USER:?Define DB_USER en .env}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en .env}
+      POSTGRES_USER: ${DB_USER:?Falta DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD}
     ports:
       - "127.0.0.1:5433:5432"
     volumes:
@@ -14,45 +14,27 @@ services:
       - ./database/01-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./database/02-seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      test:
+        
+        - CMD-SHELL
+        - 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"'
       interval: 5s
       timeout: 5s
       retries: 15
-      start_period: 15s
-    networks:
-      - tfg_network
-
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: tfg_backend
+    build: .
     restart: unless-stopped
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-tfg_db}
-      SPRING_DATASOURCE_USERNAME: ${DB_USER:?Define DB_USER en .env}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?Define DB_PASSWORD en .env}
-      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET en .env}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
-      SPRING_JPA_SHOW_SQL: "false"
-      LOGGING_LEVEL_ROOT: INFO
-      LOGGING_LEVEL_COM_EXAMPLE_DEMO: INFO
-      LOGGING_FILE_NAME: /app/logs/tfg-application.log
-      SERVER_PORT: 8080
+      DB_JDBC_URL: ${SELECTED_DB_URL:?Ejecuta scripts/start.sh o scripts/start.ps1}
+      DB_USERNAME: ${SELECTED_DB_USER:?Falta SELECTED_DB_USER}
+      DB_PASSWORD: ${SELECTED_DB_PASSWORD:?Falta SELECTED_DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Falta JWT_SECRET}
+      DB_POOL_SIZE: ${DB_POOL_SIZE:-2}
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
     ports:
-      - "127.0.0.1:${APP_PORT:-8080}:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
+      - "${APP_BIND:-127.0.0.1}:${APP_PORT:-8080}:8080"
     volumes:
       - backend_logs:/app/logs
-    networks:
-      - tfg_network
-
 volumes:
   postgres_data:
   backend_logs:
-
-networks:
-  tfg_network:
-    driver: bridge

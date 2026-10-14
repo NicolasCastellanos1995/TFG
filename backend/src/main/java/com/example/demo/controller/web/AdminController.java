@@ -122,7 +122,7 @@ public String updateUser(@ModelAttribute("user") User user,
     return "redirect:/admin";
 }
 
-    @GetMapping("/users/delete/{id}")
+    @PostMapping("/users/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
         userRepository.deleteById(id);
         return "redirect:/admin";

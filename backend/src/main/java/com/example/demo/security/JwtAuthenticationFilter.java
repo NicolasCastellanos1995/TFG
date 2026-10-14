@@ -50,7 +50,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = jwtService.extractUsername(token);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+            UserDetails userDetails;
+            try { userDetails = customUserDetailsService.loadUserByUsername(username); }
+            catch (org.springframework.security.core.userdetails.UsernameNotFoundException ex) { filterChain.doFilter(request, response); return; }
+            if (!userDetails.isEnabled()) { filterChain.doFilter(request, response); return; }
 
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(
